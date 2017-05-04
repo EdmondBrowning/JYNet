@@ -1,6 +1,5 @@
 package com.edmond.jynet.network;
 
-import com.edmond.jynet.network.base.BaseDownloadListener;
 import com.edmond.jynet.network.base.BaseDownloadNetWork;
 
 import java.util.Map;
@@ -10,7 +9,7 @@ import java.util.Map;
  */
 
 public class DownloadNetWork extends BaseDownloadNetWork {
-    public DownloadNetWork(int what, String url, String fileFolder, String fileName, BaseDownloadListener listener, Map<String, String> map) {
+    public DownloadNetWork(int what, String url, String fileFolder, String fileName, DownloadListener listener, Map<String, String> map) {
         super(what, url, fileFolder, fileName, listener, map);
     }
 }

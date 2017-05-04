@@ -17,14 +17,14 @@ import java.util.Map;
 
 public abstract class BaseJsonObjectNetWork {
     Request<JSONObject> request = null;
-    BaseJsonObjectListener baseJsonObjectListener = null;
+    JsonObjectListener jsonObjectListener = null;
     Map<String,String> params = null;
     int what;
 
-    public BaseJsonObjectNetWork(int what,String url, BaseJsonObjectListener listener,Map<String,String> map){
+    public BaseJsonObjectNetWork(int what,String url, JsonObjectListener listener,Map<String,String> map){
         this.what = what;
         this.params = map;
-        this.baseJsonObjectListener = listener;
+        this.jsonObjectListener = listener;
 
         this.request = NoHttp.createJsonObjectRequest(url, RequestMethod.POST);
         request.add(params);
@@ -34,23 +34,35 @@ public abstract class BaseJsonObjectNetWork {
         Net.getRequestQueue().add(0, request, new OnResponseListener<JSONObject>() {
             @Override
             public void onStart(int what) {
-                baseJsonObjectListener.onStart(what);
+                if(jsonObjectListener!=null)
+                    jsonObjectListener.onStart(what);
             }
 
             @Override
             public void onSucceed(int what, Response<JSONObject> response) {
-                baseJsonObjectListener.format(what,response.get());
+                if(jsonObjectListener!=null)
+                    jsonObjectListener.format(what,response.get());
             }
 
             @Override
             public void onFailed(int what, String url, Object tag, Exception exception, int responseCode, long networkMillis) {
-                baseJsonObjectListener.onFailed(what,url,tag,exception,responseCode,networkMillis);
+                if(jsonObjectListener!=null)
+                    jsonObjectListener.onFailed(what,url,tag,exception,responseCode,networkMillis);
             }
 
             @Override
             public void onFinish(int what) {
-                baseJsonObjectListener.onFinish(what);
+                if(jsonObjectListener!=null)
+                    jsonObjectListener.onFinish(what);
             }
         });
+    }
+
+    public interface JsonObjectListener<T> {
+        void format(int what, JSONObject response);
+        void onStart(int what);
+        void onSucceed(int what, T response);
+        void onFailed(int what, String url, Object tag, Exception exception, int responseCode, long networkMillis);
+        void onFinish(int what);
     }
 }

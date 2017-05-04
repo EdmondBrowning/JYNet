@@ -17,16 +17,16 @@ import java.util.Map;
 
 public abstract class BaseDownloadNetWork {
     DownloadRequest request = null;
-    BaseDownloadListener baseDownLoadListener = null;
+    DownloadListener downLoadListener = null;
     Map<String,String> params = null;
     String fileFolder = null;
     String fileName = null;
     int what;
 
-    public BaseDownloadNetWork(int what,String url, String fileFolder, String fileName ,BaseDownloadListener listener,Map<String,String> map){
+    public BaseDownloadNetWork(int what,String url, String fileFolder, String fileName ,DownloadListener listener,Map<String,String> map){
         this.what = what;
         this.params = map;
-        this.baseDownLoadListener = listener;
+        this.downLoadListener = listener;
         this.fileFolder = fileFolder;
         this.fileName = fileName;
 
@@ -35,30 +35,35 @@ public abstract class BaseDownloadNetWork {
     }
 
     public void start(){
-        Net.getDownloadQueue().add(what, request, new DownloadListener() {
+        Net.getDownloadQueue().add(what, request, new com.yolanda.nohttp.download.DownloadListener() {
             @Override
             public void onDownloadError(int what, Exception exception) {
-                baseDownLoadListener.onDownloadError(what,exception);
+                if(downLoadListener!=null)
+                    downLoadListener.onDownloadError(what,exception);
             }
 
             @Override
             public void onStart(int what, boolean isResume, long rangeSize, Headers responseHeaders, long allCount) {
-                baseDownLoadListener.onStart(what,isResume,rangeSize,responseHeaders,allCount);
+                if(downLoadListener!=null)
+                    downLoadListener.onStart(what,isResume,rangeSize,responseHeaders,allCount);
             }
 
             @Override
             public void onProgress(int what, int progress, long fileCount) {
-                baseDownLoadListener.onProgress(what,progress,fileCount);
+                if(downLoadListener!=null)
+                    downLoadListener.onProgress(what,progress,fileCount);
             }
 
             @Override
             public void onFinish(int what, String filePath) {
-                baseDownLoadListener.onFinish(what,filePath);
+                if(downLoadListener!=null)
+                    downLoadListener.onFinish(what,filePath);
             }
 
             @Override
             public void onCancel(int what) {
-                baseDownLoadListener.onCancel(what);
+                if(downLoadListener!=null)
+                    downLoadListener.onCancel(what);
             }
         });
     }
@@ -68,30 +73,35 @@ public abstract class BaseDownloadNetWork {
     }
 
     public void resume(){
-        Net.getDownloadQueue().add(what, request, new DownloadListener() {
+        Net.getDownloadQueue().add(what, request, new com.yolanda.nohttp.download.DownloadListener() {
             @Override
             public void onDownloadError(int what, Exception exception) {
-                baseDownLoadListener.onDownloadError(what,exception);
+                if(downLoadListener!=null)
+                    downLoadListener.onDownloadError(what,exception);
             }
 
             @Override
             public void onStart(int what, boolean isResume, long rangeSize, Headers responseHeaders, long allCount) {
-                baseDownLoadListener.onStart(what,isResume,rangeSize,responseHeaders,allCount);
+                if(downLoadListener!=null)
+                    downLoadListener.onStart(what,isResume,rangeSize,responseHeaders,allCount);
             }
 
             @Override
             public void onProgress(int what, int progress, long fileCount) {
-                baseDownLoadListener.onProgress(what,progress,fileCount);
+                if(downLoadListener!=null)
+                    downLoadListener.onProgress(what,progress,fileCount);
             }
 
             @Override
             public void onFinish(int what, String filePath) {
-                baseDownLoadListener.onFinish(what,filePath);
+                if(downLoadListener!=null)
+                    downLoadListener.onFinish(what,filePath);
             }
 
             @Override
             public void onCancel(int what) {
-                baseDownLoadListener.onCancel(what);
+                if(downLoadListener!=null)
+                    downLoadListener.onCancel(what);
             }
         });
     }
@@ -104,5 +114,13 @@ public abstract class BaseDownloadNetWork {
         }else if((file = new File(Environment.getExternalStorageDirectory().getAbsolutePath(),fileName)).isFile()&&file.exists()){
             file.delete();
         }
+    }
+
+    public interface DownloadListener {
+        void onDownloadError(int what, Exception exception);
+        void onStart(int what, boolean isResume, long rangeSize, Headers responseHeaders, long allCount);
+        void onProgress(int what, int progress, long fileCount);
+        void onFinish(int what, String filePath);
+        void onCancel(int what);
     }
 }

@@ -1,6 +1,5 @@
 package com.edmond.jynet.network;
 
-import com.edmond.jynet.network.base.BaseStringListener;
 import com.edmond.jynet.network.base.BaseStringNetWork;
 
 import java.util.Map;
@@ -10,7 +9,7 @@ import java.util.Map;
  */
 
 public class StringNetWork extends BaseStringNetWork {
-    public StringNetWork (int what, String url, BaseStringListener stringNet, Map<String, String> map) {
+    public StringNetWork (int what, String url, StringListener stringNet, Map<String, String> map) {
         super(what,url,stringNet, map);
     }
 }

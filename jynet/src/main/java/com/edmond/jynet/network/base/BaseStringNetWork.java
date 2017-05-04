@@ -15,14 +15,14 @@ import java.util.Map;
 
 public abstract class BaseStringNetWork {
     Request<String> request = null;
-    BaseStringListener baseStringListener;
+    StringListener stringListener;
     Map<String,String> params;
     int what;
 
-    public BaseStringNetWork(int what,String url, BaseStringListener listener,Map<String,String> map) {
+    public BaseStringNetWork(int what,String url, StringListener listener,Map<String,String> map) {
         this.what = what;
         this.params = map;
-        this.baseStringListener = listener;
+        this.stringListener = listener;
 
         request = NoHttp.createStringRequest(url, RequestMethod.POST);
         request.add(params);
@@ -32,23 +32,35 @@ public abstract class BaseStringNetWork {
         Net.getRequestQueue().add(what, request, new OnResponseListener<String>() {
             @Override
             public void onStart(int what) {
-                baseStringListener.onStart(what);
+                if(stringListener!=null)
+                    stringListener.onStart(what);
             }
 
             @Override
             public void onSucceed(int what, Response<String> response) {
-                baseStringListener.format(what,response.get());
+                if(stringListener!=null)
+                    stringListener.format(what,response.get());
             }
 
             @Override
             public void onFailed(int what, String url, Object tag, Exception exception, int responseCode, long networkMillis) {
-                baseStringListener.onFailed(what,url,tag,exception,responseCode,networkMillis);
+                if(stringListener!=null)
+                    stringListener.onFailed(what,url,tag,exception,responseCode,networkMillis);
             }
 
             @Override
             public void onFinish(int what) {
-                baseStringListener.onFinish(what);
+                if(stringListener!=null)
+                    stringListener.onFinish(what);
             }
         });
+    }
+
+    public interface StringListener<T> {
+        void format(int what, String response);
+        void onStart(int what);
+        void onSucceed(int what, T response);
+        void onFailed(int what, String url, Object tag, Exception exception, int responseCode, long networkMillis);
+        void onFinish(int what);
     }
 }
